@@ -17,6 +17,13 @@ const PRIORITY_BADGE: Record<string, string> = {
   Low: 'bg-gray-100 text-gray-600',
 }
 
+const STATUS_BADGE: Record<string, string> = {
+  Open: 'bg-blue-100 text-blue-700',
+  'In Progress': 'bg-yellow-100 text-yellow-700',
+  Blocked: 'bg-red-100 text-red-700',
+  Done: 'bg-green-100 text-green-700',
+}
+
 const BottleneckTable: React.FC<BottleneckTableProps> = ({ data, loading, error }) => {
   if (loading) {
     return <div className="rounded-2xl shadow-md p-6 bg-white animate-pulse h-48" />
@@ -71,7 +78,13 @@ const BottleneckTable: React.FC<BottleneckTableProps> = ({ data, loading, error 
                   >
                     {issue.title}
                   </td>
-                  <td className="py-2 pr-4 text-gray-600">{issue.status}</td>
+                  <td className="py-2 pr-4">
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_BADGE[issue.status] ?? 'bg-gray-100 text-gray-600'}`}
+                    >
+                      {issue.status}
+                    </span>
+                  </td>
                   <td className="py-2 pr-4">
                     <span
                       className={`px-2 py-0.5 rounded text-xs font-medium ${PRIORITY_BADGE[issue.priority]}`}

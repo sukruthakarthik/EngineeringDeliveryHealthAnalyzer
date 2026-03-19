@@ -236,7 +236,7 @@ export default function App() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <HealthScoreCard {...filteredHealthScore} />
-        <WorkloadDistribution {...workload} />
+        <WorkloadDistribution {...workload} selectedPriorities={filters.priority} />
       </div>
 
       <BottleneckTable {...filteredBottlenecks} />

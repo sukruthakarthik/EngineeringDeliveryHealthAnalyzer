@@ -11,7 +11,9 @@ import {
 } from 'recharts'
 import type { UseWorkloadResult } from '../hooks/useWorkload'
 
-type WorkloadDistributionProps = UseWorkloadResult
+interface WorkloadDistributionProps extends UseWorkloadResult {
+  selectedPriorities?: string[]
+}
 
 const PRIORITY_COLORS: Record<string, string> = {
   Critical: '#ef4444',
@@ -20,7 +22,9 @@ const PRIORITY_COLORS: Record<string, string> = {
   Low: '#22c55e',
 }
 
-const WorkloadDistribution: React.FC<WorkloadDistributionProps> = ({ data, loading, error }) => {
+const GREYED_OUT = '#d1d5db'
+
+const WorkloadDistribution: React.FC<WorkloadDistributionProps> = ({ data, loading, error, selectedPriorities }) => {
   if (loading) {
     return <div className="rounded-2xl shadow-md p-6 bg-white animate-pulse h-64" />
   }
@@ -38,6 +42,8 @@ const WorkloadDistribution: React.FC<WorkloadDistributionProps> = ({ data, loadi
     count: data.data[priority],
   }))
   const total = chartData.reduce((sum, d) => sum + d.count, 0)
+
+  const hasFilter = selectedPriorities !== undefined && selectedPriorities.length > 0
 
   return (
     <div className="rounded-2xl shadow-md p-6 bg-white">
@@ -61,7 +67,14 @@ const WorkloadDistribution: React.FC<WorkloadDistributionProps> = ({ data, loadi
           <Tooltip cursor={{ fill: '#f9fafb' }} />
           <Bar dataKey="count" radius={[6, 6, 0, 0]}>
             {chartData.map(entry => (
-              <Cell key={entry.priority} fill={PRIORITY_COLORS[entry.priority]} />
+              <Cell
+                key={entry.priority}
+                fill={
+                  hasFilter && !selectedPriorities!.includes(entry.priority)
+                    ? GREYED_OUT
+                    : PRIORITY_COLORS[entry.priority]
+                }
+              />
             ))}
           </Bar>
         </BarChart>
