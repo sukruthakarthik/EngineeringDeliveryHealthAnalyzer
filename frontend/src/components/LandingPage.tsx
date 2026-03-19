@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import { useSpaces } from '../hooks/useSpaces'
 import { useHealthScore } from '../hooks/useHealthScore'
 import { useActiveRelease } from '../hooks/useActiveRelease'
+import { useFixVersions } from '../hooks/useFixVersions'
 
 /** Hardcoded team lead per space shown on the landing page card. */
 const SPACE_TEAM_LEAD: Record<string, string> = {
@@ -37,12 +38,18 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
   const activeReleaseObj = useActiveRelease(space)
   const activeRelease = activeReleaseObj?.name ?? null
 
+  // Fallback: if no active release, use the most recent fix version
+  const fixVersions = useFixVersions(space)
+  const latestVersion = fixVersions.length > 0 ? fixVersions[fixVersions.length - 1] : null
+  const displayRelease = activeRelease ?? latestVersion?.name ?? null
+  const isActiveRelease = !!activeRelease
+
   const allIssues = data?.data.issues ?? []
 
-  // Filter issues to the active release only
+  // Filter issues to the current release
   const issues = useMemo(
-    () => (activeRelease ? allIssues.filter(i => i.fix_version === activeRelease) : allIssues),
-    [allIssues, activeRelease],
+    () => (displayRelease ? allIssues.filter(i => i.fix_version === displayRelease) : allIssues),
+    [allIssues, displayRelease],
   )
 
   const totalIssues = issues.length
@@ -69,16 +76,24 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
         {space}
       </h3>
 
-      {/* Active release badge */}
-      {activeRelease && !loading && !error && (
+      {/* Release badge */}
+      {displayRelease && !loading && !error && (
         <div className="flex items-center gap-1.5 mb-3">
-          <svg className="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            className={`w-3.5 h-3.5 shrink-0 ${isActiveRelease ? 'text-indigo-400' : 'text-gray-400'}`}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
           </svg>
-          <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full truncate">
-            {activeRelease}
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full truncate ${
+            isActiveRelease
+              ? 'text-indigo-600 bg-indigo-50'
+              : 'text-gray-500 bg-gray-100'
+          }`}>
+            {displayRelease}
           </span>
+          {!isActiveRelease && (
+            <span className="text-xs text-gray-400">(completed)</span>
+          )}
         </div>
       )}
 
@@ -98,7 +113,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
       {!loading && !error && (
         <div className="mb-2 flex-1">
           <p className="text-xs text-gray-400 mb-2">
-            {activeRelease ? `${totalIssues} issues in release` : `${totalIssues} total issues`}
+            {displayRelease ? `${totalIssues} issues in release` : `${totalIssues} total issues`}
           </p>
 
           <ResponsiveContainer width="100%" height={160}>
@@ -146,7 +161,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
           ) : (
             <div className="text-center mt-2 text-sm space-y-0.5">
               <p className="text-gray-500 font-medium">No issues in this release</p>
-              <p className="text-blue-500 text-xs">You can still check other releases via View Details below</p>
             </div>
           )}
 
@@ -175,7 +189,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
       )}
 
       <button
-        onClick={() => onViewDetails(space, activeRelease ?? undefined)}
+        onClick={() => onViewDetails(space, displayRelease ?? undefined)}
         className="w-full mt-4 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
       >
         View Details
