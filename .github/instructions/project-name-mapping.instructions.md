@@ -14,6 +14,7 @@ PROJECT_NAME_TO_ID = {
     "Voice Policy Engine 2.0": "VPE2",
     "RCEM 3.1": "RCEM31",
     "RCEM 3.0": "RCEM3",
+    "AIP Risk Support": "AIPRS",
     "Steering 9.0": "NTR9"
 }
 ```
@@ -27,7 +28,7 @@ PROJECT_CONTRIBUTORS = {
     "TSA-SITE": ["Sukrutha Karthik"],
     "Voice Policy Engine 2.0": ["Roja Rameti"],
     "RCEM 3.0": ["Sumit Kumar"],
-    "RCEM 3.2": ["Bruno Alves Ferraz"],
+    "AIP Risk Support": ["Bruno Ferraz"],
     "Steering 9.0": ["Chandramouli B"],
 }
 ```
@@ -38,6 +39,7 @@ export const PROJECT_CONTRIBUTORS: Record<string, string[]> = {
   'TSA-SITE': ['Sukrutha Karthik'],
   'Voice Policy Engine 2.0': ['Roja Rameti'],
   'RCEM 3.0': ['Sumit Kumar'],
-  'RCEM 3.2': ['Chandramouli B'],
+  'AIP Risk Support': ['Bruno Ferraz'],
+  'Steering 9.0': ['Chandramouli B'],
 }
 ```

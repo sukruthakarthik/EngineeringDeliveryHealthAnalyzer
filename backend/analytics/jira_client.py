@@ -53,6 +53,11 @@ _STATUS_MAP: dict[str, str] = {
     "code review": "In Progress",
     "review": "In Progress",
     "impediment": "Blocked",
+    # AIPRS-specific statuses
+    "information requested (o)": "In Progress",
+    "information provided": "In Progress",
+    "information not provided": "Done",
+    "duplicate": "Done",
 }
 
 _PRIORITY_MAP: dict[str, str] = {

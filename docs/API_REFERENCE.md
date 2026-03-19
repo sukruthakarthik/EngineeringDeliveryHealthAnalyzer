@@ -35,7 +35,7 @@ Returns issues from the loaded dataset. Supports optional filters.
 | `TSA-SITE` | `SITE 14.1` · `SITE 14.1 GR` · `SITE 14.1 TMO` · `SITE 15.0` |
 | `Voice Policy Engine 2.0` | `VPE2.0.22.6.0` · `VPE2-2.0-R221001` · `VPE2-2.0-R220901` |
 | `RCEM 3.0` | `RCEM 3.0` · `RNS-Prior-Apr-2022-Releases` · `Unassigned` |
-| `AIP Risk Support` | `RCEM 3.2` · `None` |
+| `AIP Risk Support` | `RAFM_9.3` · `None` |
 
 > Use `GET /api/v1/jira/fix-versions?project=TSITE` (or `VPE2`, `RCEM3`, `RCEM32`) to get the live version list from JIRA.
 

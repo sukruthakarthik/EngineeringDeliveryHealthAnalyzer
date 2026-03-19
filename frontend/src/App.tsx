@@ -190,7 +190,7 @@ export default function App() {
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-sm text-gray-500">Release Version:</span>
               <select
-                value={currentRelease?.name ?? ''}
+                value={filters.sprint.length === 1 ? filters.sprint[0] : ''}
                 onChange={e => {
                   const name = e.target.value
                   setFilters(f => ({ ...f, sprint: name ? [name] : [] }))
@@ -200,8 +200,9 @@ export default function App() {
                 {availableSprints.map(name => (
                   <option key={name} value={name}>{name}</option>
                 ))}
+                <option value="">All Releases</option>
               </select>
-              {currentRelease && (
+              {filters.sprint.length === 1 && currentRelease && (
                 currentRelease.released && currentRelease.releaseDate && new Date(currentRelease.releaseDate) <= new Date() ? (
                   <span className="inline-flex items-center gap-1 text-xs font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
