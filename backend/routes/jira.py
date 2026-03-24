@@ -109,9 +109,23 @@ def sync_issues(
         except (json.JSONDecodeError, OSError):
             existing = []
 
-    # Keep issues for all OTHER projects, then append the freshly synced ones
-    other_projects = [i for i in existing if i.get("project") != project]
-    merged = other_projects + issues
+    # When a fix_version filter is used, only replace issues matching that
+    # prefix — keep the project's other fix-version issues intact.
+    # Without a filter, replace ALL issues for the project.
+    synced_ids = {i["issue_id"] for i in issues}
+    if fix_version:
+        prefix = fix_version.lower()
+        kept = [
+            i for i in existing
+            if i.get("project") != project
+            or (
+                not (i.get("fix_version", "").lower().startswith(prefix))
+                and i.get("issue_id") not in synced_ids
+            )
+        ]
+    else:
+        kept = [i for i in existing if i.get("project") != project]
+    merged = kept + issues
 
     with _DATA_PATH.open("w", encoding="utf-8") as f:
         json.dump(merged, f, indent=2, ensure_ascii=False)

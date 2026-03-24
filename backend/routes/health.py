@@ -4,7 +4,7 @@ from analytics.data_loader import load_issues
 from analytics.scoring import compute_health_score, compute_team_score
 from analytics.rag import classify_rag
 from analytics.bottlenecks import _is_bottleneck, bottleneck_reason
-from models.issue import IssueWithScore, HealthSummary, ReleaseHealth
+from models.issue import IssueWithScore, HealthSummary, ReleaseHealth, SpaceHealthSummary
 from models.response import make_response
 
 router = APIRouter(prefix="/api/v1", tags=["health"])
@@ -103,3 +103,44 @@ def get_health_score_by_release(
     results = results[:limit]
 
     return make_response([r.model_dump() for r in results])
+
+
+@router.get("/health-score/summary")
+def get_health_score_summary(
+    project: str | None = Query(None, description="Filter by JIRA project ID, e.g. 'TSITE', 'VPE2', 'RCEM3'"),
+    fix_version: str | None = Query(None, description="Filter by exact fix version name"),
+) -> dict:
+    """Lightweight summary: RAG counts + team score, without the full issue list.
+
+    Designed for the landing page cards where individual issues are not needed.
+    """
+    issues = load_issues()
+    if project:
+        issues = [i for i in issues if i.project == project]
+    if fix_version:
+        issues = [i for i in issues if i.fix_version == fix_version]
+
+    red = amber = green = 0
+    for issue in issues:
+        score = compute_health_score(issue)
+        rag = classify_rag(score)
+        if rag == "Red":
+            red += 1
+        elif rag == "Amber":
+            amber += 1
+        else:
+            green += 1
+
+    team_score = compute_team_score(issues)
+    space = issues[0].space if issues else ""
+
+    summary = SpaceHealthSummary(
+        space=space,
+        team_score=team_score,
+        rag=classify_rag(team_score),
+        total_issues=len(issues),
+        red=red,
+        amber=amber,
+        green=green,
+    )
+    return make_response(summary.model_dump())

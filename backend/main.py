@@ -11,7 +11,13 @@ app = FastAPI(title="Engineering Delivery Health Analyzer", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "https://172.17.17.104",
+        "http://172.17.17.104",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

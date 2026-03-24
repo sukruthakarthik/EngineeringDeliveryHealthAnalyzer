@@ -6,6 +6,8 @@ venv/
 backend/.env
 frontend/.env.local
 
+# Safe to commit: .env.example, .env.production (no credentials)
+
 # Python
 __pycache__/
 *.pyc

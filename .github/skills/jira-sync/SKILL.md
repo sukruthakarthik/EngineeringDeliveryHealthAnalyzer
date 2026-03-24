@@ -93,7 +93,7 @@ A **Space** is a logical grouping of JIRA project keys. The mapping is defined i
 | `TSA-SITE` | `TSITE` |
 | `Voice Policy Engine 2.0` | `VPE2` |
 | `RCEM 3.0` | `RCEM3` |
-| `RCEM 3.2` | `RCEM32` |
+| `AIP Risk Support` | `AIPRS` |
 
 `_PROJECT_TO_SPACE` is the reverse lookup, auto-generated from the same dict. Every synced issue gets a `space` field populated from this map.
 

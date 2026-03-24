@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import { useSpaces } from '../hooks/useSpaces'
-import { useHealthScore } from '../hooks/useHealthScore'
+import { useHealthSummary } from '../hooks/useHealthSummary'
 import { useActiveRelease } from '../hooks/useActiveRelease'
-import { useFixVersions } from '../hooks/useFixVersions'
 
 /** Hardcoded team lead per space shown on the landing page card. */
 const SPACE_TEAM_LEAD: Record<string, string> = {
@@ -31,41 +30,32 @@ interface SpaceCardProps {
 }
 
 const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
-  // Each card fetches its own data via API with project filter
-  const { data, loading, error } = useHealthScore(space)
-
   // Get the active (unreleased) release from the dedicated JIRA API
   const activeReleaseObj = useActiveRelease(space)
   const activeRelease = activeReleaseObj?.name ?? null
 
-  // Fallback: if no active release, use the most recent fix version
-  const fixVersions = useFixVersions(space)
-  const latestVersion = fixVersions.length > 0 ? fixVersions[fixVersions.length - 1] : null
-  const displayRelease = activeRelease ?? latestVersion?.name ?? null
+  // Lightweight summary: just RAG counts, no full issue list
+  const { data, loading, error } = useHealthSummary(space, activeRelease ?? undefined)
+
+  // Fallback: if no active release, label as "Internal" (show all issues)
+  const displayRelease = activeRelease ?? 'Internal'
   const isActiveRelease = !!activeRelease
 
-  const allIssues = data?.data.issues ?? []
-
-  // Filter issues to the current release
-  const issues = useMemo(
-    () => (displayRelease ? allIssues.filter(i => i.fix_version === displayRelease) : allIssues),
-    [allIssues, displayRelease],
-  )
-
-  const totalIssues = issues.length
+  const totalIssues = data?.data.total_issues ?? 0
+  const ragCounts = useMemo(() => ({
+    Red: data?.data.red ?? 0,
+    Amber: data?.data.amber ?? 0,
+    Green: data?.data.green ?? 0,
+  }), [data])
 
   const ragData = useMemo(() => {
     if (totalIssues === 0) return [{ name: 'None', value: 1 }]
-    const counts: Record<string, number> = { Green: 0, Amber: 0, Red: 0 }
-    issues.forEach(issue => counts[issue.rag]++)
-    return Object.entries(counts).map(([name, value]) => ({ name, value }))
-  }, [issues, totalIssues])
-
-  const ragCounts = useMemo(() => {
-    const counts: Record<string, number> = { Green: 0, Amber: 0, Red: 0 }
-    issues.forEach(issue => counts[issue.rag]++)
-    return counts
-  }, [issues])
+    return [
+      { name: 'Red', value: ragCounts.Red },
+      { name: 'Amber', value: ragCounts.Amber },
+      { name: 'Green', value: ragCounts.Green },
+    ]
+  }, [totalIssues, ragCounts])
 
   // Hardcoded team lead for this space
   const teamLead = SPACE_TEAM_LEAD[space] ?? ''
@@ -91,9 +81,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
           }`}>
             {displayRelease}
           </span>
-          {!isActiveRelease && (
-            <span className="text-xs text-gray-400">(completed)</span>
-          )}
         </div>
       )}
 
@@ -189,7 +176,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ space, onViewDetails }) => {
       )}
 
       <button
-        onClick={() => onViewDetails(space, displayRelease ?? undefined)}
+        onClick={() => onViewDetails(space, activeRelease ?? undefined)}
         className="w-full mt-4 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
       >
         View Details

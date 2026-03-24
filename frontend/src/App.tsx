@@ -25,7 +25,7 @@ export default function App() {
 
   // Pass selectedSpace to hooks — backend handles space filtering server-side
   const healthScore = useHealthScore(selectedSpace || undefined)
-  const currentFixVersion = filters.sprint.length === 1 ? filters.sprint[0] : undefined
+  const currentFixVersion = filters.sprint.length === 1 && filters.sprint[0] !== 'Internal' ? filters.sprint[0] : undefined
   const bottlenecks = useBottlenecks(selectedSpace || undefined, currentFixVersion)
 
   useEffect(() => {
@@ -52,10 +52,18 @@ export default function App() {
 
   // Fetch fix versions for the selected space from JIRA API
   const fixVersions = useFixVersions(selectedSpace || undefined)
-  const availableSprints = fixVersions.map(v => v.name)
+  const fixVersionNames = fixVersions.map(v => v.name)
 
   // Fetch the active (unreleased) release from the dedicated JIRA API
   const activeRelease = useActiveRelease(selectedSpace || undefined)
+
+  // Add "Internal" option when there's no active release so all issues can be viewed
+  const availableSprints = useMemo(() => {
+    if (!activeRelease && !fixVersionNames.includes('Internal')) {
+      return ['Internal', ...fixVersionNames]
+    }
+    return fixVersionNames
+  }, [fixVersionNames, activeRelease])
 
   // Auto-select the active release as the sprint filter when entering the dashboard
   // (only if no sprint was explicitly passed from the landing page)
@@ -66,6 +74,7 @@ export default function App() {
   }, [activeRelease]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Derive current release: prefer the active sprint filter, else the active release from API.
+  // When no active release exists, use a synthetic "Internal" entry (shows all issues).
   const currentRelease = useMemo((): FixVersion | null => {
     if (filters.sprint.length === 1) {
       return (
@@ -73,8 +82,9 @@ export default function App() {
         { name: filters.sprint[0], released: false, releaseDate: '' }
       )
     }
-    // No sprint filter — show the active release from the dedicated API
-    return activeRelease
+    if (activeRelease) return activeRelease
+    // No active release — synthetic "Internal" label
+    return { name: 'Internal', released: false, releaseDate: '' }
   }, [fixVersions, filters.sprint, activeRelease])
 
   // Apply additional filters (status, priority, sprint, rag) client-side
@@ -84,7 +94,7 @@ export default function App() {
     const hasFilters =
       filters.status.length > 0 ||
       filters.priority.length > 0 ||
-      filters.sprint.length > 0 ||
+      (filters.sprint.length > 0 && !filters.sprint.includes('Internal')) ||
       filters.rag.length > 0
 
     if (!hasFilters) return healthScore
@@ -92,14 +102,18 @@ export default function App() {
     const filteredIssues = healthScore.data.data.issues.filter((issue: IssueWithScore) => {
       if (filters.status.length > 0 && !filters.status.includes(issue.status)) return false
       if (filters.priority.length > 0 && !filters.priority.includes(issue.priority)) return false
-      if (filters.sprint.length > 0 && !filters.sprint.includes(issue.fix_version || 'Unassigned')) return false
+      if (filters.sprint.length > 0 && !filters.sprint.includes('Internal') && !filters.sprint.includes(issue.fix_version || 'Unassigned')) return false
       if (filters.rag.length > 0 && !filters.rag.includes(issue.rag)) return false
       return true
     })
 
-    const activeFiltered = filteredIssues.filter(i => i.status !== 'Done')
-    const teamScore = activeFiltered.length === 0 ? 0
-      : Math.round(activeFiltered.reduce((sum, i) => sum + i.health_score, 0) / activeFiltered.length)
+    const isCompleted = !!(currentRelease?.released && currentRelease.releaseDate && new Date(currentRelease.releaseDate) <= new Date())
+
+    // For completed releases, score ALL issues (historical view);
+    // for active releases, score only non-Done issues.
+    const scoredIssues = isCompleted ? filteredIssues : filteredIssues.filter(i => i.status !== 'Done')
+    const teamScore = scoredIssues.length === 0 ? 0
+      : Math.round(scoredIssues.reduce((sum, i) => sum + i.health_score, 0) / scoredIssues.length)
 
     const classifyRAG = (score: number) => {
       if (filteredIssues.length === 0) return 'None'
@@ -121,7 +135,7 @@ export default function App() {
         }
       }
     }
-  }, [healthScore, filters])
+  }, [healthScore, filters, currentRelease])
 
   // Apply additional filters to bottlenecks (already filtered by space server-side)
   const filteredBottlenecks = useMemo(() => {
@@ -130,7 +144,7 @@ export default function App() {
     const hasFilters =
       filters.status.length > 0 ||
       filters.priority.length > 0 ||
-      filters.sprint.length > 0 ||
+      (filters.sprint.length > 0 && !filters.sprint.includes('Internal')) ||
       filters.rag.length > 0
 
     if (!hasFilters) return bottlenecks
@@ -138,7 +152,7 @@ export default function App() {
     const filteredData = bottlenecks.data.data.filter((issue: IssueWithScore) => {
       if (filters.status.length > 0 && !filters.status.includes(issue.status)) return false
       if (filters.priority.length > 0 && !filters.priority.includes(issue.priority)) return false
-      if (filters.sprint.length > 0 && !filters.sprint.includes(issue.fix_version || 'Unassigned')) return false
+      if (filters.sprint.length > 0 && !filters.sprint.includes('Internal') && !filters.sprint.includes(issue.fix_version || 'Unassigned')) return false
       if (filters.rag.length > 0 && !filters.rag.includes(issue.rag)) return false
       return true
     })
@@ -246,7 +260,13 @@ export default function App() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <HealthScoreCard {...filteredHealthScore} />
-        <WorkloadDistribution workload={filteredWorkload} selectedPriorities={filters.priority} />
+        <WorkloadDistribution
+          workload={filteredWorkload}
+          selectedPriorities={filters.priority}
+          isCompletedRelease={
+            !!(currentRelease?.released && currentRelease.releaseDate && new Date(currentRelease.releaseDate) <= new Date())
+          }
+        />
       </div>
 
       <BottleneckTable

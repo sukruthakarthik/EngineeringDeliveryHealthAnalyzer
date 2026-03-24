@@ -35,7 +35,7 @@ Returns issues from the loaded dataset. Supports optional filters.
 | `TSA-SITE` | `SITE 14.1` · `SITE 14.1 GR` · `SITE 14.1 TMO` · `SITE 15.0` |
 | `Voice Policy Engine 2.0` | `VPE2.0.22.6.0` · `VPE2-2.0-R221001` · `VPE2-2.0-R220901` |
 | `RCEM 3.0` | `RCEM 3.0` · `RNS-Prior-Apr-2022-Releases` · `Unassigned` |
-| `AIP Risk Support` | `RCEM 3.2` · `None` |
+| `AIP Risk Support` | `AIPRS` · `None` |
 
 > Use `GET /api/v1/jira/fix-versions?project=TSITE` (or `VPE2`, `RCEM3`, `RCEM32`) to get the live version list from JIRA.
 
@@ -73,7 +73,7 @@ Returns issues from the loaded dataset. Supports optional filters.
 | `fix_version` | string | Fix version or `"Unassigned"` (e.g. `SITE 14.1 GR`, `SITE 14.1 TMO`) |
 | `fix_version_released` | boolean | `true` when the fix version is formally released in JIRA |
 | `fix_version_date` | string | ISO date of the release, e.g. `"2025-11-14"`; empty string if unset |
-| `space` | string | Product area, e.g. `"TSA-SITE"`, `"Voice Policy Engine 2.0"`, `"RCEM 3.0"`, `"RCEM 3.2"` |
+| `space` | string | Product area, e.g. `"TSA-SITE"`, `"Voice Policy Engine 2.0"`, `"RCEM 3.0"`, `"AIP Risk Support"` |
 | `type` | string | `Bug` \| `Feature` \| `Task` \| `Improvement` |
 
 ---
@@ -85,7 +85,7 @@ Returns the team-level RAG health score plus per-issue scored details. Filter by
 
 | Param | Required | Description |
 |---|---|---|
-| `space` | ❌ | Filter by space: `TSA-SITE` \| `Voice Policy Engine 2.0` \| `RCEM 3.0` \| `RCEM 3.2` |
+| `space` | ❌ | Filter by space: `TSA-SITE` \| `Voice Policy Engine 2.0` \| `RCEM 3.0` \| `AIP Risk Support` |
 | `fix_version` | ❌ | Filter by exact fix version, e.g. `SITE 14.1`, `SITE 14.1 GR`, `VPE2.0.22.6.0` |
 
 **Examples:**
@@ -161,7 +161,7 @@ Returns issues flagged as bottlenecks, sorted by risk (Blocked first, then by `d
 
 | Param | Required | Description |
 |---|---|---|
-| `space` | ❌ | Filter by space: `TSA-SITE` \| `Voice Policy Engine 2.0` \| `RCEM 3.0` \| `RCEM 3.2` |
+| `space` | ❌ | Filter by space: `TSA-SITE` \| `Voice Policy Engine 2.0` \| `RCEM 3.0` \| `AIP Risk Support` |
 | `fix_version` | ❌ | Filter by exact fix version, e.g. `SITE 14.1 GR`, `SITE 14.1 TMO` |
 
 **Examples:**
@@ -212,8 +212,8 @@ GET /api/v1/health-score/by-release?space=Voice+Policy+Engine+2.0
 # RCEM 3.0
 GET /api/v1/health-score/by-release?space=RCEM+3.0
 
-# RCEM 3.2
-GET /api/v1/health-score/by-release?space=RCEM+3.2
+# AIP Risk Support
+GET /api/v1/health-score/by-release?space=AIP+Risk+Support
 ```
 
 **Response `data`:** Array of `ReleaseHealth` objects.
@@ -268,6 +268,48 @@ GET /api/v1/health-score/by-release?space=RCEM+3.2
 
 ---
 
+### GET `/api/v1/health-score/summary`
+Lightweight summary: RAG counts + team score per space, without the full issue list.
+Designed for landing page cards where individual issues are not needed.
+
+**Parameters:**
+
+| Param | Type | Required | Description |
+|---|---|---|---|
+| `project` | `string` | No | JIRA project ID, e.g. `TSITE`, `VPE2`, `RCEM3` |
+| `fix_version` | `string` | No | Exact fix version name, e.g. `SITE 15.0` |
+
+**Examples:**
+```
+GET /api/v1/health-score/summary?project=TSITE
+GET /api/v1/health-score/summary?project=TSITE&fix_version=SITE+15.0
+```
+
+**Response `data`:**
+```json
+{
+  "space": "TSA-SITE",
+  "team_score": 68,
+  "rag": "Amber",
+  "total_issues": 100,
+  "red": 5,
+  "amber": 72,
+  "green": 23
+}
+```
+
+| Field | Description |
+|---|---|
+| `space` | Product area, e.g. `"TSA-SITE"` |
+| `team_score` | Average health score of non-Done issues (100 if all Done) |
+| `rag` | RAG classification of the team score |
+| `total_issues` | Total issues matching filters |
+| `red` | Count of issues with Red RAG status |
+| `amber` | Count of issues with Amber RAG status |
+| `green` | Count of issues with Green RAG status |
+
+---
+
 ### GET `/api/v1/workload`
 Returns active issue counts grouped by priority (excludes `Done` issues).
 
@@ -296,7 +338,7 @@ Returns all known spaces and their mapped JIRA project keys. Use this to populat
   { "space": "TSA-SITE",               "projects": ["TSITE"] },
   { "space": "Voice Policy Engine 2.0", "projects": ["VPE2"] },
   { "space": "RCEM 3.0",               "projects": ["RCEM3"] },
-  { "space": "RCEM 3.2",               "projects": ["RCEM32"] }
+  { "space": "AIP Risk Support",      "projects": ["SIPRS"] }
 ]
 ```
 

@@ -27,7 +27,7 @@ PROJECT_CONTRIBUTORS = {
     "TSA-SITE": ["Sukrutha Karthik"],
     "Voice Policy Engine 2.0": ["Roja Rameti"],
     "RCEM 3.0": ["Sumit Kumar"],
-    "RCEM 3.2": ["Bruno Alves Ferraz"],
+    "AIPRS": ["Bruno Alves Ferraz"],
     "Steering 9.0": ["Chandramouli B"],
 }
 ```
@@ -38,6 +38,7 @@ export const PROJECT_CONTRIBUTORS: Record<string, string[]> = {
   'TSA-SITE': ['Sukrutha Karthik'],
   'Voice Policy Engine 2.0': ['Roja Rameti'],
   'RCEM 3.0': ['Sumit Kumar'],
-  'RCEM 3.2': ['Chandramouli B'],
+  'AIPRS': ['Bruno Ferraz'],
+  'Steering 9.0': ['Chandramouli B'],
 }
 ```

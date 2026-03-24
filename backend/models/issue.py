@@ -45,3 +45,14 @@ class ReleaseHealth(BaseModel):
     blocked_issues: int
     done_issues: int
     bottleneck_count: int
+
+
+class SpaceHealthSummary(BaseModel):
+    """Lightweight per-space health summary for the landing page (no issue list)."""
+    space: str
+    team_score: int
+    rag: str
+    total_issues: int
+    red: int
+    amber: int
+    green: int

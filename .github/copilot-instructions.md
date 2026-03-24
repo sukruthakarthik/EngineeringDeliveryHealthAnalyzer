@@ -50,6 +50,7 @@ EngineeringDeliveryHealthAnalyzer/
 | GET | `/api/v1/issues` | All raw issues wrapped in response envelope |
 | GET | `/api/v1/health-score` | `HealthSummary` with per-issue scores + bottleneck flags |
 | GET | `/api/v1/health-score/by-release` | `ReleaseHealth[]` grouped by fix version; params: `space`, `limit` |
+| GET | `/api/v1/health-score/summary` | `SpaceHealthSummary` with RAG counts (no issue list); params: `project`, `fix_version` |
 | GET | `/api/v1/bottlenecks` | Sorted list of bottleneck `IssueWithScore` items |
 | GET | `/api/v1/workload` | `{ Critical: n, High: n, Medium: n, Low: n }` (active issues only) |
 | GET | `/api/v1/jira/spaces` | Known spaces and their JIRA project keys |
@@ -77,7 +78,7 @@ Each item must match the `Issue` Pydantic model exactly:
   "fix_version": "SITE 14.1 | SITE 14.1 GR | SITE 14.1 TMO | Unassigned",
   "fix_version_released": false,
   "fix_version_date": "2025-11-14",
-  "space": "TSA-SITE | Voice Policy Engine 2.0 | RCEM 3.0 | RCEM 3.2",
+  "space": "TSA-SITE | Voice Policy Engine 2.0 | RCEM 3.0 | AIPRS",
   "type": "Bug | Feature | Task | Improvement"
 }
 ```
@@ -92,7 +93,7 @@ Always use `space` when filtering — it resolves to the correct project key(s) 
 | `TSA-SITE` | `TSITE` |
 | `Voice Policy Engine 2.0` | `VPE2` |
 | `RCEM 3.0` | `RCEM3` |
-| `RCEM 3.2` | `RCEM32` |
+| `AIP Risk Support` | `AIPRS` |
 
 Mapping defined in `_SPACE_TO_PROJECTS` in `backend/analytics/jira_client.py`.  
 Use `GET /api/v1/jira/spaces` to retrieve the mapping at runtime.

@@ -47,3 +47,13 @@ export interface SpaceInfo {
 export interface ProjectMapping {
   [name: string]: string
 }
+
+export interface SpaceHealthSummary {
+  space: string
+  team_score: number
+  rag: 'Red' | 'Amber' | 'Green'
+  total_issues: number
+  red: number
+  amber: number
+  green: number
+}
