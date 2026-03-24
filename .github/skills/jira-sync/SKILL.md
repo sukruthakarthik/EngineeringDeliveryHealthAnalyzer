@@ -17,7 +17,7 @@ argument-hint: "Describe the mapping change or sync issue, e.g. 'add new status 
 
 ## Mobileum JIRA Instance Facts
 
-**Base URL:** `https://mobileumjira.atlassian.net`  
+**Base URL:** `https://yourcompany.atlassian.net`  
 **API version:** REST API v3 — `{base}/rest/api/3/`  
 **Auth:** HTTP Basic Auth — email + API token
 

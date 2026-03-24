@@ -6,12 +6,17 @@ venv/
 backend/.env
 frontend/.env.local
 
+# Configuration (optional - uncomment if you don't want to commit your project names)
+# config/projects.json
+
 # Safe to commit: .env.example, .env.production (no credentials)
 
 # Python
 __pycache__/
 *.pyc
 
-# Node
-node_modules/
+# Data
 dist/
+
+# Backups and sensitive data
+data/issues.json.backup

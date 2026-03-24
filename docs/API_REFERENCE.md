@@ -393,8 +393,8 @@ Returns assignable users for a JIRA project.
 [
   {
     "account_id": "712020:...",
-    "display_name": "Sukrutha Karthik",
-    "email": "sukrutha.karthik@mobileum.com"
+    "display_name": "John Doe",
+    "email": "user@yourcompany.com"
   }
 ]
 ```

@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "TSA-SITE": "TSITE",
+    "Voice Policy Engine 2.0": "VPE2",
+    "RCEM 3.0": "RCEM3",
+    "AIP Risk Support": "AIPRS",
+    "Steering 9.0": "NTR9"
+  },
+  "contributors": {
+    "TSA-SITE": ["Sukrutha Karthik"],
+    "Voice Policy Engine 2.0": ["Roja Rameti"],
+    "RCEM 3.0": ["Sumit Kumar"],
+    "AIP Risk Support": ["Bruno Alves Ferraz"],
+    "Steering 9.0": ["Chandramouli B"]
+  }
+}

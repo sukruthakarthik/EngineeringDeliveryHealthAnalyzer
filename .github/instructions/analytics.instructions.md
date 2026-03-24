@@ -13,8 +13,8 @@ description: "Python analytics conventions for health scoring, RAG classificatio
 ## Data Model
 Each issue has these fields:
 ```python
-issue_id: str              # e.g. "TSITE-12413", "VPE2-20089", "RCEM3-62"
-project:  str              # JIRA project key, e.g. "TSITE", "VPE2", "RCEM3"
+issue_id: str              # e.g. "PRJA-123", "PRJB2-456", "PRJG3-789"
+project:  str              # JIRA project key, e.g. "PRJA", "PRJB2", "PRJG3"
 title: str
 status: str                # "Open" | "In Progress" | "Blocked" | "Done"
 priority: str              # "Low" | "Medium" | "High" | "Critical"

@@ -9,7 +9,7 @@ A real-time dashboard that analyzes engineering work items from JIRA and surface
 - **Bottleneck Detection**: Automatically identifies blocked or stalled issues
 - **Workload Distribution**: Priority-based workload visualization
 - **JIRA Integration**: Sync issues directly from JIRA by space, project, or fix version
-- **Multi-Space Support**: Track multiple product areas (TSA-SITE, RCEM, VPE, AIPRS, etc.)
+- **Multi-Space Support**: Track multiple product areas (configurable per deployment)
 
 ## 📋 Prerequisites
 
@@ -56,7 +56,25 @@ For production deployments, `.env.production` uses relative URLs automatically.
 
 ## 🛠️ Local Development Setup
 
-### Backend Setup
+### 1. Configure Your Projects
+
+Edit **`config/projects.json`** to add your JIRA projects:
+
+```json
+{
+  "projects": {
+    "Your Space Name": "JIRAKEY",
+    "Another Project 2.0": "PROJ2"
+  },
+  "contributors": {
+    "Your Space Name": ["Developer A", "Developer B"]
+  }
+}
+```
+
+That's it! Both backend and frontend use this same file.
+
+### 2. Backend Setup
 
 ```bash
 # 1. Navigate to project root

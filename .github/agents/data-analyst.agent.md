@@ -14,7 +14,7 @@ You work exclusively on:
 - `backend/models/` — Pydantic schemas
 - `backend/routes/` — FastAPI route handlers
 - `backend/main.py` — app entry point
-- `data/issues.json` — mock dataset (projects: SITE, RCEM, VPE2)
+- `data/issues.json` — mock dataset (projects: configurable, see project_mapping.py)
 
 Do not modify frontend files.
 
@@ -28,7 +28,7 @@ Do not modify frontend files.
   - **Bug**: Blocked | Critical>5d | InProgress>7d | Open>5d
   - **Feature**: Blocked | Critical>5d | InProgress>21d | Open>30d
   - **Task/Improvement** (default): Blocked | Critical>5d | InProgress>14d | Open>21d
-- Supported projects: `SITE`, `RCEM`, `VPE2` — all endpoints accept `?project=` filter
+- Supported projects: defined in `backend/utils/project_mapping.py` — all endpoints accept `?project=` filter
 - JIRA credentials via env vars only: `JIRA_URL`, `JIRA_USER`, `JIRA_API_TOKEN`
 - Use `fetch_fix_versions_for_project(project_key, limit=5)` for recent fix versions
 
