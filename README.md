@@ -58,21 +58,44 @@ For production deployments, `.env.production` uses relative URLs automatically.
 
 ### 1. Configure Your Projects
 
-Edit **`config/projects.json`** to add your JIRA projects:
+**Edit `config/projects.json`** to add your JIRA projects and spaces:
 
 ```json
 {
   "projects": {
-    "Your Space Name": "JIRAKEY",
-    "Another Project 2.0": "PROJ2"
+    "Your Space Display Name": "JIRAKEY",
+    "Another Product 2.0": "PROJ2"
   },
   "contributors": {
-    "Your Space Name": ["Developer A", "Developer B"]
+    "Your Space Display Name": ["Developer Name 1", "Developer Name 2"],
+    "Another Product 2.0": ["Developer Name 3"]
   }
 }
 ```
 
-That's it! Both backend and frontend use this same file.
+**Important:**
+- **Space Name** (key): The display name shown in the UI dropdown and filters
+- **Project Key** (value): Your JIRA project key/ID (e.g., "TSITE", "VPE2")
+- **Contributors** (optional): List of assignee names for each space
+
+**Example:**
+```json
+{
+  "projects": {
+    "TSA-SITE": "TSITE",
+    "Voice Policy Engine 2.0": "VPE2"
+  },
+  "contributors": {
+    "TSA-SITE": ["John Doe", "Jane Smith"]
+  }
+}
+```
+
+Both backend and frontend automatically load from this single file - no code changes needed!
+
+**For detailed configuration guide:** See [`docs/PROJECT_CONFIGURATION.md`](docs/PROJECT_CONFIGURATION.md)
+
+**If your project names are sensitive:** Keep your real config in `config/projects.json.backup` and commit the anonymized version.
 
 ### 2. Backend Setup
 

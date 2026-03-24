@@ -1,16 +1,16 @@
 {
   "projects": {
-    "TSA-SITE": "TSITE",
-    "Voice Policy Engine 2.0": "VPE2",
-    "RCEM 3.0": "RCEM3",
-    "AIP Risk Support": "AIPRS",
-    "Steering 9.0": "NTR9"
+    "Product Alpha": "PRJA",
+    "Product Beta 2.0": "PRJB2",
+    "Product Gamma 3.0": "PRJG3",
+    "Product Delta": "PRJD",
+    "Product Epsilon": "PRJE"
   },
   "contributors": {
-    "TSA-SITE": ["Sukrutha Karthik"],
-    "Voice Policy Engine 2.0": ["Roja Rameti"],
-    "RCEM 3.0": ["Sumit Kumar"],
-    "AIP Risk Support": ["Bruno Alves Ferraz"],
-    "Steering 9.0": ["Chandramouli B"]
+    "Product Alpha": ["Engineer A", "Engineer B"],
+    "Product Beta 2.0": ["Engineer C"],
+    "Product Gamma 3.0": ["Engineer D"],
+    "Product Delta": ["Engineer E"],
+    "Product Epsilon": ["Engineer F"]
   }
 }

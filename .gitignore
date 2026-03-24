@@ -9,6 +9,9 @@ frontend/.env.local
 # Configuration (optional - uncomment if you don't want to commit your project names)
 # config/projects.json
 
+# Backup files with real data
+config/projects.json.backup
+
 # Safe to commit: .env.example, .env.production (no credentials)
 
 # Python
