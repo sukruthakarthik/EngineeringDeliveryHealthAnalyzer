@@ -142,7 +142,7 @@ Frontend will be available at: `http://localhost:5173`
 
 ## 🌐 Production Deployment
 
-See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for complete deployment instructions including:
+See [`docs/DEPLOYMENT_NGINX.md`](docs/DEPLOYMENT_NGINX.md) for complete deployment instructions including:
 
 - Building for production
 - Nginx configuration
